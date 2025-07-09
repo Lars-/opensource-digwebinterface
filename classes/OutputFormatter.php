@@ -1,6 +1,19 @@
 <?php
+
+/**
+ * DNS Output Formatter
+ * 
+ * Formats dig command output with colorization, clickable elements,
+ * and various display modes for web presentation.
+ * 
+ * @package OpenSourceDIG
+ * @since 1.0.0
+ */
 class OutputFormatter {
-    private $colorMap = [
+    /**
+     * @var array Map of DNS record types to CSS classes for colorization
+     */
+    private array $colorMap = [
         ';' => 'comment',
         'A' => 'record-a',
         'AAAA' => 'record-aaaa',
@@ -16,7 +29,14 @@ class OutputFormatter {
         'DNSKEY' => 'record-dnskey'
     ];
     
-    public function format($output, $options = []) {
+    /**
+     * Format DNS query output with optional colorization and clickable elements
+     * 
+     * @param array|string $output Raw output lines or string
+     * @param array $options Formatting options (colorize, clickable)
+     * @return string HTML formatted output
+     */
+    public function format(array|string $output, array $options = []): string {
         $lines = is_array($output) ? $output : explode("\n", $output);
         $formatted = [];
         
@@ -37,7 +57,14 @@ class OutputFormatter {
         return '<pre class="dns-output">' . implode("\n", $formatted) . '</pre>';
     }
     
-    public function formatMultipleResults($results, $options = []) {
+    /**
+     * Format results from multiple nameserver queries
+     * 
+     * @param array $results Array of results from different nameservers
+     * @param array $options Formatting options
+     * @return string HTML formatted output
+     */
+    public function formatMultipleResults(array $results, array $options = []): string {
         $html = '<div class="multi-nameserver-results">';
         
         foreach ($results as $result) {
@@ -51,7 +78,13 @@ class OutputFormatter {
         return $html;
     }
     
-    public function extractAnswerSection($lines) {
+    /**
+     * Extract answer section from dig output
+     * 
+     * @param array $lines Output lines from dig command
+     * @return array Lines containing DNS answers only
+     */
+    public function extractAnswerSection(array $lines): array {
         $inAnswer = false;
         $answers = [];
         
@@ -73,7 +106,13 @@ class OutputFormatter {
         return $answers;
     }
     
-    private function colorizeLine($line) {
+    /**
+     * Apply color formatting to a single output line
+     * 
+     * @param string $line Line to colorize
+     * @return string HTML formatted line with color spans
+     */
+    private function colorizeLine(string $line): string {
         if (strpos($line, ';') === 0) {
             return '<span class="comment">' . $line . '</span>';
         }
@@ -127,7 +166,13 @@ class OutputFormatter {
         return implode(' ', $tokens);
     }
     
-    private function makeClickable($line) {
+    /**
+     * Make IP addresses and domains clickable in output
+     * 
+     * @param string $line Line to process
+     * @return string Line with clickable links
+     */
+    private function makeClickable(string $line): string {
         $line = preg_replace_callback(
             '/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/',
             function($matches) {
@@ -158,15 +203,33 @@ class OutputFormatter {
         return $line;
     }
     
-    private function isIPAddress($str) {
+    /**
+     * Check if string is a valid IP address
+     * 
+     * @param string $str String to check
+     * @return bool True if valid IP address
+     */
+    private function isIPAddress(string $str): bool {
         return filter_var($str, FILTER_VALIDATE_IP) !== false;
     }
     
-    private function isDomain($str) {
+    /**
+     * Check if string is a valid domain name
+     * 
+     * @param string $str String to check
+     * @return bool True if valid domain
+     */
+    private function isDomain(string $str): bool {
         return preg_match('/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', $str);
     }
     
-    public function formatPlain($output) {
+    /**
+     * Format output as plain text without any styling
+     * 
+     * @param array|string $output Raw output
+     * @return string HTML pre-formatted plain text
+     */
+    public function formatPlain(array|string $output): string {
         if (is_array($output)) {
             $output = implode("\n", $output);
         }
@@ -174,7 +237,14 @@ class OutputFormatter {
         return '<pre class="dns-output-plain">' . htmlspecialchars($output) . '</pre>';
     }
     
-    public function formatSimplified($lines, $options = []) {
+    /**
+     * Format output in simplified mode showing only answers
+     * 
+     * @param array $lines Output lines
+     * @param array $options Formatting options
+     * @return string Simplified HTML output
+     */
+    public function formatSimplified(array $lines, array $options = []): string {
         // Extract just the answer section when no special options are selected
         $answers = $this->extractAnswerSection($lines);
         
@@ -208,7 +278,14 @@ class OutputFormatter {
         return '<pre class="dns-output dns-output-simple">' . implode("\n", $formatted) . '</pre>';
     }
     
-    public function highlightQuery($output, $query) {
+    /**
+     * Highlight query terms in output
+     * 
+     * @param string $output Output to process
+     * @param string $query Query term to highlight
+     * @return string Output with highlighted terms
+     */
+    public function highlightQuery(string $output, string $query): string {
         $query = preg_quote($query, '/');
         return preg_replace("/($query)/i", '<mark>$1</mark>', $output);
     }

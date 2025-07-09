@@ -1,9 +1,32 @@
 <?php
+
+/**
+ * DNS Query Handler
+ * 
+ * Handles DNS lookups using the dig command with support for various record types,
+ * nameservers, and query options. Provides security through input sanitization.
+ * 
+ * @package OpenSourceDIG
+ * @since 1.0.0
+ */
 class DNSQuery {
-    private $config;
-    private $digPath;
+    /**
+     * @var array Configuration array containing DNS settings
+     */
+    private array $config;
     
-    public function __construct($config) {
+    /**
+     * @var string Path to the dig executable
+     */
+    private string $digPath;
+    
+    /**
+     * Constructor
+     * 
+     * @param array $config Configuration array with dig_path and other settings
+     * @throws \Exception If dig command is not found or not executable
+     */
+    public function __construct(array $config) {
         $this->config = $config;
         $this->digPath = $config['dig_path'];
         
@@ -12,7 +35,20 @@ class DNSQuery {
         }
     }
     
-    public function query($hostname, $recordType = 'A', $nameservers = [], $options = []) {
+    /**
+     * Perform DNS query
+     * 
+     * Executes DNS queries with support for multiple nameservers, authoritative lookups,
+     * and NIC (registry) queries.
+     * 
+     * @param string $hostname The hostname or IP address to query
+     * @param string $recordType The DNS record type (A, AAAA, MX, etc.)
+     * @param array $nameservers Array of nameserver IPs or special values ('authoritative', 'nic')
+     * @param array $options Query options (short, trace, dnssec, etc.)
+     * @return array Query results with 'multiple' flag and 'results' array
+     * @throws \Exception If query fails or invalid parameters provided
+     */
+    public function query(string $hostname, string $recordType = 'A', array $nameservers = [], array $options = []): array {
         $hostname = $this->sanitizeHostname($hostname);
         
         // Handle reverse lookup
@@ -157,7 +193,16 @@ class DNSQuery {
         }
     }
     
-    private function sanitizeHostname($hostname) {
+    /**
+     * Sanitize hostname input
+     * 
+     * Removes potentially dangerous characters and validates hostname format
+     * 
+     * @param string $hostname Raw hostname input
+     * @return string Sanitized hostname
+     * @throws \InvalidArgumentException If hostname is empty or invalid
+     */
+    private function sanitizeHostname(string $hostname): string {
         $hostname = trim($hostname);
         
         if (empty($hostname)) {
@@ -177,7 +222,14 @@ class DNSQuery {
         return $hostname;
     }
     
-    private function sanitizeRecordType($recordType) {
+    /**
+     * Sanitize and validate record type
+     * 
+     * @param string $recordType DNS record type
+     * @return string Validated record type
+     * @throws \InvalidArgumentException If record type is invalid
+     */
+    private function sanitizeRecordType(string $recordType): string {
         $recordType = trim($recordType);
         
         // Handle empty/unspecified - keep it empty
@@ -199,7 +251,15 @@ class DNSQuery {
         return $recordType;
     }
     
-    private function sanitizeNameservers($nameservers) {
+    /**
+     * Sanitize nameserver addresses
+     * 
+     * Validates IP addresses and hostnames for nameservers
+     * 
+     * @param array $nameservers Array of nameserver addresses
+     * @return array Sanitized nameserver addresses
+     */
+    private function sanitizeNameservers(array $nameservers): array {
         $sanitized = [];
         
         foreach ($nameservers as $ns) {
@@ -223,7 +283,16 @@ class DNSQuery {
         return $sanitized;
     }
     
-    private function buildCommand($hostname, $recordType, $nameservers, $options) {
+    /**
+     * Build dig command with proper escaping
+     * 
+     * @param string $hostname Hostname to query
+     * @param string $recordType DNS record type
+     * @param array $nameservers Nameserver addresses
+     * @param array $options Query options
+     * @return string Complete dig command
+     */
+    private function buildCommand(string $hostname, string $recordType, array $nameservers, array $options): string {
         $parts = [escapeshellcmd($this->digPath)];
         
         // Add nameservers
@@ -291,7 +360,14 @@ class DNSQuery {
         return implode(' ', $parts);
     }
     
-    private function executeCommand($command) {
+    /**
+     * Execute dig command and capture output
+     * 
+     * @param string $command The dig command to execute
+     * @return array Command output with lines, full output, and return code
+     * @throws \Exception If command execution fails
+     */
+    private function executeCommand(string $command): array {
         $output = [];
         $returnCode = 0;
         
@@ -347,7 +423,13 @@ class DNSQuery {
         ];
     }
     
-    public function parseIPFromEmail($email) {
+    /**
+     * Extract domain from email address
+     * 
+     * @param string $email Email address
+     * @return string Domain part of email
+     */
+    public function parseIPFromEmail(string $email): string {
         $email = trim($email);
         if (strpos($email, '@') !== false) {
             $parts = explode('@', $email);
@@ -356,7 +438,13 @@ class DNSQuery {
         return $email;
     }
     
-    public function parseHostFromURL($url) {
+    /**
+     * Extract hostname from URL
+     * 
+     * @param string $url URL to parse
+     * @return string Hostname extracted from URL
+     */
+    public function parseHostFromURL(string $url): string {
         $url = trim($url);
         
         if (!preg_match('~^https?://~i', $url)) {
@@ -368,11 +456,23 @@ class DNSQuery {
         return isset($parsed['host']) ? $parsed['host'] : $url;
     }
     
-    private function isIPAddress($str) {
+    /**
+     * Check if string is a valid IP address
+     * 
+     * @param string $str String to check
+     * @return bool True if valid IP address
+     */
+    private function isIPAddress(string $str): bool {
         return filter_var($str, FILTER_VALIDATE_IP) !== false;
     }
     
-    private function getReverseDNS($ip) {
+    /**
+     * Convert IP address to reverse DNS format
+     * 
+     * @param string $ip IP address (IPv4 or IPv6)
+     * @return string Reverse DNS format (in-addr.arpa or ip6.arpa)
+     */
+    private function getReverseDNS(string $ip): string {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             // IPv4 reverse DNS
             $octets = explode('.', $ip);
@@ -388,7 +488,13 @@ class DNSQuery {
         return $ip;
     }
     
-    private function extractDomain($hostname) {
+    /**
+     * Extract base domain from hostname
+     * 
+     * @param string $hostname Full hostname
+     * @return string Base domain (e.g., example.com from www.example.com)
+     */
+    private function extractDomain(string $hostname): string {
         // For IP addresses, return as is
         if ($this->isIPAddress($hostname)) {
             return $hostname;
@@ -410,7 +516,13 @@ class DNSQuery {
         return implode('.', array_slice($parts, -2));
     }
     
-    private function extractTLD($hostname) {
+    /**
+     * Extract top-level domain from hostname
+     * 
+     * @param string $hostname Hostname
+     * @return string TLD (e.g., com, org, net)
+     */
+    private function extractTLD(string $hostname): string {
         // For IP addresses, return empty
         if ($this->isIPAddress($hostname)) {
             return '';

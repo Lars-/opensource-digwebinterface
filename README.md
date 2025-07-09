@@ -1,88 +1,325 @@
-# Open Source DIG Web Interface
+# 🌐 Open Source DIG Web Interface
 
-A PHP-based web interface for DNS lookups using the `dig` command. This is an open-source alternative to online DIG tools, designed for local hosting.
+<div align="center">
 
-## Features
+![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-8892BF?style=for-the-badge&logo=php)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Web-blue?style=for-the-badge)
 
-- Multiple DNS record type queries (A, AAAA, MX, CNAME, NS, PTR, SOA, TXT, etc.)
-- Custom nameserver configuration
-- Multiple hostname queries in a single request
-- Various dig options (+short, +trace, +dnssec, etc.)
-- Colorized output
-- Clickable hostnames and IP addresses in results
-- URL-based query sharing
-- Keyboard shortcuts (Ctrl+Enter to submit, Ctrl+L to clear)
-- Automatic URL/email to hostname conversion
+A modern, secure web interface for DNS lookups using the `dig` command. Perfect for self-hosting your own DNS lookup tool with a clean, responsive interface.
 
-## Requirements
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Configuration](#%EF%B8%8F-configuration) • [Security](#-security)
 
-- PHP 7.4 or higher
-- `dig` command installed (part of `bind-utils` or `dnsutils` package)
-- Web server (Apache, Nginx, etc.)
+</div>
 
-## Installation
+## ✨ Features
+
+### 🔍 DNS Query Capabilities
+- **Multiple Record Types**: Query 50+ DNS record types including A, AAAA, MX, CNAME, NS, PTR, SOA, TXT, CAA, HTTPS, SVCB, and more
+- **Batch Queries**: Look up multiple hostnames in a single request
+- **Reverse DNS**: Automatic PTR record lookups for IP addresses
+- **DNSSEC Support**: Validate DNSSEC signatures with the `+dnssec` option
+
+### 🌍 Nameserver Options
+- **15+ Public Resolvers**: Pre-configured popular DNS resolvers including:
+  - Google (8.8.8.8, 8.8.4.4)
+  - Cloudflare (1.1.1.1, 1.0.0.1)
+  - Quad9 (9.9.9.9, 149.112.112.112)
+  - OpenDNS, AdGuard, Yandex, and more
+- **Custom Nameservers**: Add your own DNS servers
+- **Authoritative Queries**: Query authoritative nameservers directly
+- **NIC/Registry Queries**: Query TLD nameservers for domain information
+- **Parallel Queries**: Query all resolvers simultaneously for comparison
+
+### 🎨 User Interface
+- **Modern Design**: Clean, responsive interface that works on all devices
+- **Real-time AJAX**: Asynchronous queries with live progress updates
+- **Syntax Highlighting**: Colorized output for different DNS record types
+- **Clickable Results**: Click on IPs or domains to add them to your query
+- **Dark Mode Ready**: Easy on the eyes with proper color contrast
+
+### 🛠️ Advanced Features
+- **URL/Email Parsing**: Automatically extract domains from URLs and email addresses
+- **Query Options**: Support for dig flags like `+short`, `+trace`, `+tcp`, `+noquestion`
+- **Share URLs**: Generate shareable links for specific queries
+- **Command Display**: See the exact dig command being executed
+- **Export Results**: Copy commands or results with one click
+- **Keyboard Shortcuts**: 
+  - `Ctrl+Enter`: Submit query
+  - `Ctrl+L`: Clear form
+
+### 🔧 Technical Features
+- **PHP 8.3+ Compatible**: Uses modern PHP features with type declarations
+- **Security First**: Input sanitization, command escaping, no shell injection
+- **No Database Required**: Simple file-based configuration
+- **Zero Dependencies**: No composer packages or external libraries needed
+- **Progressive Enhancement**: Works without JavaScript, enhanced with it
+
+## 📋 Requirements
+
+- **PHP 8.3** or higher with the following extensions:
+  - `json` (for AJAX API)
+  - `filter` (for input validation)
+- **dig command** (part of `bind-utils` or `dnsutils` package)
+- **Web server**: Apache, Nginx, or any PHP-compatible server
+- **Modern browser**: Chrome, Firefox, Safari, or Edge
+
+## 🚀 Installation
 
 ### Using DDEV (Recommended for Development)
 
-1. Clone this repository:
+1. **Clone the repository**:
    ```bash
-   git clone <repository-url> opensource-digwebinterface
+   git clone https://github.com/yourusername/opensource-digwebinterface.git
    cd opensource-digwebinterface
    ```
 
-2. Start DDEV:
+2. **Start DDEV**:
    ```bash
    ddev start
    ```
 
-3. The application will be available at:
+3. **Access the interface**:
    ```
    https://opensource-digwebinterface.ddev.site
    ```
 
-That's it! DDEV automatically installs all dependencies including the `dig` command.
-
 ### Manual Installation
 
-1. Clone or download this repository to your web server directory
-2. Ensure the `dig` command is installed:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/opensource-digwebinterface.git
+   cd opensource-digwebinterface
+   ```
+
+2. **Install dig command**:
    ```bash
    # Ubuntu/Debian
    sudo apt-get install dnsutils
    
    # CentOS/RHEL/Fedora
    sudo yum install bind-utils
+   
+   # macOS (using Homebrew)
+   brew install bind
    ```
-3. Configure your web server to point to the project directory
-4. Update `config/config.php` if needed (especially the `dig_path` if it's not at `/usr/bin/dig`)
 
-## Configuration
+3. **Configure your web server**:
+
+   **Apache** (`.htaccess` example):
+   ```apache
+   <IfModule mod_rewrite.c>
+       RewriteEngine On
+       RewriteRule ^api/(.*)$ api/$1 [L]
+       RewriteCond %{REQUEST_FILENAME} !-f
+       RewriteCond %{REQUEST_FILENAME} !-d
+       RewriteRule ^(.*)$ index.php [QSA,L]
+   </IfModule>
+   ```
+
+   **Nginx** configuration:
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+       root /path/to/opensource-digwebinterface;
+       index index.php;
+
+       location / {
+           try_files $uri $uri/ /index.php?$query_string;
+       }
+
+       location /api {
+           try_files $uri $uri/ /api/query.php?$query_string;
+       }
+
+       location ~ \.php$ {
+           fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+           fastcgi_index index.php;
+           include fastcgi_params;
+           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+       }
+   }
+   ```
+
+4. **Set permissions**:
+   ```bash
+   chmod 755 cache/
+   ```
+
+## 🎯 Usage
+
+### Basic Query
+1. Enter a hostname (e.g., `example.com`) in the text area
+2. Select a DNS record type (default: A)
+3. Choose a resolver or use the default
+4. Click "Dig!" or press `Ctrl+Enter`
+
+### Advanced Queries
+
+**Multiple Hostnames**:
+```
+google.com
+cloudflare.com
+github.com
+```
+
+**Query All Resolvers**:
+- Select "All resolvers" to compare results across all configured DNS servers
+
+**Authoritative Lookup**:
+- Select "Authoritative" to query the domain's authoritative nameservers directly
+
+**Custom Nameservers**:
+```
+8.8.8.8
+1.1.1.1
+9.9.9.9
+```
+
+**URL/Email Conversion**:
+- Enable "Fix" to automatically extract domains:
+  - `https://example.com/page` → `example.com`
+  - `user@example.com` → `example.com`
+
+## ⚙️ Configuration
 
 Edit `config/config.php` to customize:
-- Site name and description
-- Path to dig executable
-- Default timeout
-- Default nameservers
-- Available record types
-- Maximum number of hostnames/nameservers per query
 
-## Usage
+```php
+return [
+    // Site branding
+    'site_name' => 'Your DNS Tool',
+    'site_description' => 'Custom description',
+    
+    // dig command location (auto-detected in most cases)
+    'dig_path' => '/usr/bin/dig',
+    
+    // Query timeout (seconds)
+    'default_timeout' => 5,
+    
+    // Add custom resolvers
+    'resolvers' => [
+        'custom' => [
+            'name' => 'My DNS Server',
+            'servers' => ['192.168.1.1', '192.168.1.2']
+        ],
+        // ... existing resolvers
+    ],
+    
+    // Limit simultaneous queries
+    'max_hostnames' => 10,
+    'max_nameservers' => 5,
+];
+```
 
-1. Open the interface in your web browser
-2. Enter one or more hostnames or IP addresses
-3. Optionally specify custom nameservers
-4. Select the DNS record type
-5. Choose additional options
-6. Click "Dig!" or press Ctrl+Enter
+## 🔒 Security
 
-## Security
+### Built-in Protections
+- **Input Sanitization**: All user inputs are validated and sanitized
+- **Command Injection Prevention**: Uses `escapeshellarg()` and `escapeshellcmd()`
+- **No Direct Shell Access**: Commands are built programmatically
+- **XSS Protection**: All output is HTML-escaped
+- **CSRF Protection**: Can be added via middleware
 
-This tool is designed for local/private network use. If exposing to the internet:
-- Implement rate limiting
-- Add authentication
-- Sanitize all inputs (already implemented)
-- Consider using a reverse proxy
+### Deployment Security Checklist
 
-## License
+1. **Restrict Access** (if needed):
+   ```apache
+   # .htaccess for IP restriction
+   <RequireAll>
+       Require ip 192.168.1.0/24
+       Require ip 10.0.0.0/8
+   </RequireAll>
+   ```
 
-MIT License
+2. **Add Rate Limiting**:
+   ```php
+   // In api/query.php
+   session_start();
+   $requests = $_SESSION['requests'] ?? [];
+   $requests = array_filter($requests, fn($t) => $t > time() - 60);
+   if (count($requests) > 30) {
+       http_response_code(429);
+       die(json_encode(['error' => 'Too many requests']));
+   }
+   $_SESSION['requests'] = [...$requests, time()];
+   ```
+
+3. **Enable HTTPS**:
+   ```apache
+   # Force HTTPS redirect
+   RewriteCond %{HTTPS} off
+   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+   ```
+
+4. **Add Authentication** (optional):
+   ```php
+   // Basic auth example
+   $valid_users = ['user' => password_hash('password', PASSWORD_DEFAULT)];
+   // Add to index.php and api/query.php
+   ```
+
+## 🎨 Customization
+
+### Themes
+The interface uses CSS custom properties for easy theming:
+
+```css
+:root {
+    --primary: #0066cc;
+    --primary-hover: #0052a3;
+    --success: #00a651;
+    --danger: #d32f2f;
+    /* Modify these in style-compact.css */
+}
+```
+
+### Adding Record Types
+Add new DNS record types in `config/config.php`:
+
+```php
+'record_types' => [
+    'NEWTYPE' => 'NEWTYPE Description',
+    // ... existing types
+],
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow PSR-12 coding standards
+- Add PHPDoc comments for new methods
+- Test with PHP 8.3+
+- Ensure no security vulnerabilities
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with PHP and vanilla JavaScript
+- Uses the powerful `dig` command from ISC BIND
+- Inspired by online DNS lookup tools
+- Icon and emoji designs from OpenMoji
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/opensource-digwebinterface/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/opensource-digwebinterface/discussions)
+- **Security**: Please report security issues privately
+
+---
+
+<div align="center">
+Made with ❤️ for the DNS community
+</div>
