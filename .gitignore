@@ -1,0 +1,25 @@
+# DDEV
+.ddev/db_snapshots
+.ddev/import-db
+.ddev/.gitignore
+.ddev/homeadditions
+
+# Cache
+cache/*
+!cache/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+error_log
+access_log
