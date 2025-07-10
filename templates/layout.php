@@ -69,7 +69,7 @@
         <footer>
             <p>Open Source DIG Web Interface - A local DNS lookup tool</p>
             <p>Keyboard shortcuts: <kbd>Ctrl+Enter</kbd> to submit, <kbd>Ctrl+L</kbd> to clear</p>
-            <p>Developed by <a href="https://ljpc.solutions" target="_blank" rel="noopener">LJPc Solutions</a></p>
+            <p>Developed by <a href="https://ljpc.solutions" target="_blank" rel="noopener">LJPc solutions</a></p>
         </footer>
     </div>
     
