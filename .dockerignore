@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# DDEV
+.ddev/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+error_log
+access_log
+
+# Documentation
+README.md
+LICENSE
+
+# Docker files (don't need to copy these into the image)
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Cache (will be created by Dockerfile)
+cache/*
+!cache/.gitkeep

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: dig-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - .:/var/www/html:ro
+    depends_on:
+      - php
+    networks:
+      - dig-network
+    restart: unless-stopped
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dig-php
+    volumes:
+      - .:/var/www/html
+      - ./cache:/var/www/html/cache:rw
+    environment:
+      - PHP_FPM_PM=dynamic
+      - PHP_FPM_PM_MAX_CHILDREN=5
+      - PHP_FPM_PM_START_SERVERS=2
+      - PHP_FPM_PM_MIN_SPARE_SERVERS=1
+      - PHP_FPM_PM_MAX_SPARE_SERVERS=3
+    networks:
+      - dig-network
+    restart: unless-stopped
+    # Ensure DNS works properly in container
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+networks:
+  dig-network:
+    driver: bridge

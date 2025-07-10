@@ -57,6 +57,11 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 ## 📋 Requirements
 
+### For Docker Installation (Recommended)
+- **Docker** 20.10 or higher
+- **Docker Compose** v2 or higher
+
+### For Manual Installation
 - **PHP 8.3** or higher with the following extensions:
   - `json` (for AJAX API)
   - `filter` (for input validation)
@@ -66,7 +71,43 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 ## 🚀 Installation
 
-### Using DDEV (Recommended for Development)
+### Using Docker Compose (Recommended)
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/opensource-digwebinterface.git
+   cd opensource-digwebinterface
+   ```
+
+2. **Start the containers**:
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Access the interface**:
+   ```
+   http://localhost:8080
+   ```
+
+4. **View logs** (optional):
+   ```bash
+   docker compose logs -f
+   ```
+
+5. **Stop the containers**:
+   ```bash
+   docker compose down
+   ```
+
+#### Docker Features
+- **PHP 8.3** with FPM for optimal performance
+- **Nginx** web server with optimized configuration
+- **Alpine Linux** base for minimal image size
+- **dig command** pre-installed and configured
+- **Volume mounts** for easy development
+- **Automatic permissions** handling for cache directory
+
+### Using DDEV (Alternative for Development)
 
 1. **Clone the repository**:
    ```bash
@@ -283,6 +324,71 @@ Add new DNS record types in `config/config.php`:
     'NEWTYPE' => 'NEWTYPE Description',
     // ... existing types
 ],
+```
+
+## 🐳 Docker Troubleshooting
+
+### Common Issues
+
+1. **Port 8080 already in use**:
+   ```bash
+   # Change the port in docker-compose.yml
+   ports:
+     - "8081:80"  # Use port 8081 instead
+   ```
+
+2. **Permission denied errors**:
+   ```bash
+   # Rebuild with proper permissions
+   docker compose down
+   docker compose build --no-cache
+   docker compose up -d
+   ```
+
+3. **dig command not working**:
+   ```bash
+   # Test dig inside container
+   docker compose exec php dig google.com
+   
+   # Check dig path
+   docker compose exec php which dig
+   ```
+
+4. **Changes not reflecting**:
+   ```bash
+   # Restart services
+   docker compose restart
+   
+   # Or rebuild if needed
+   docker compose down
+   docker compose up -d --build
+   ```
+
+### Docker Commands Reference
+
+```bash
+# Start services
+docker compose up -d
+
+# Stop services
+docker compose down
+
+# View logs
+docker compose logs -f
+docker compose logs -f php    # PHP logs only
+docker compose logs -f nginx  # Nginx logs only
+
+# Execute commands in container
+docker compose exec php sh                    # Shell access
+docker compose exec php dig example.com       # Run dig command
+docker compose exec php php -v                # Check PHP version
+
+# Rebuild images
+docker compose build
+docker compose build --no-cache               # Force rebuild
+
+# Remove everything (including volumes)
+docker compose down -v
 ```
 
 ## 🤝 Contributing
