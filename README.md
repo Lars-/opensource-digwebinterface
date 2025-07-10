@@ -75,7 +75,7 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/opensource-digwebinterface.git
+   git clone https://github.com/Lars-/opensource-digwebinterface.git
    cd opensource-digwebinterface
    ```
 
@@ -111,7 +111,7 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/opensource-digwebinterface.git
+   git clone https://github.com/Lars-/opensource-digwebinterface.git
    cd opensource-digwebinterface
    ```
 
@@ -129,7 +129,7 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/opensource-digwebinterface.git
+   git clone https://github.com/Lars-/opensource-digwebinterface.git
    cd opensource-digwebinterface
    ```
 
@@ -420,8 +420,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/opensource-digwebinterface/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/opensource-digwebinterface/discussions)
+- **Issues**: [GitHub Issues](https://github.com/Lars-/opensource-digwebinterface/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Lars-/opensource-digwebinterface/discussions)
 - **Security**: Please report security issues privately
 
 ## ☕ Support the Developer

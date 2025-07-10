@@ -416,6 +416,15 @@ footer kbd {
     font-size: 10px;
 }
 
+footer p {
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+footer p:last-child {
+    margin-top: var(--spacing-md);
+    margin-bottom: 0;
+}
+
 footer a {
     color: var(--primary);
     text-decoration: none;
