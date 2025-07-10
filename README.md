@@ -12,6 +12,14 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 </div>
 
+## 📸 Screenshot
+
+<div align="center">
+<img src="docs/images/screenshot-opensource-digwebinterface.png" alt="Open Source DIG Web Interface Screenshot" width="100%" style="max-width: 1200px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+
+*Clean, modern interface with real-time DNS lookups and syntax highlighting*
+</div>
+
 ## ✨ Features
 
 ### 🔍 DNS Query Capabilities
