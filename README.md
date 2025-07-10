@@ -271,7 +271,7 @@ The interface uses CSS custom properties for easy theming:
     --primary-hover: #0052a3;
     --success: #00a651;
     --danger: #d32f2f;
-    /* Modify these in style-compact.css */
+    /* Modify these in main.css */
 }
 ```
 
@@ -317,6 +317,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: [GitHub Issues](https://github.com/yourusername/opensource-digwebinterface/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/opensource-digwebinterface/discussions)
 - **Security**: Please report security issues privately
+
+## ☕ Support the Developer
+
+If you find this tool useful, consider buying me a coffee!
+
+<div align="center">
+<a href="https://www.buymeacoffee.com/Lars-" target="_blank">
+<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200">
+</a>
+</div>
 
 ---
 

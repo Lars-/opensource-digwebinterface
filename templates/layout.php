@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($pageDescription); ?>">
-    <link rel="stylesheet" href="assets/style-compact.css">
+    <link rel="stylesheet" href="assets/main.css">
 </head>
 <body>
     <div class="container">
@@ -69,6 +69,7 @@
         <footer>
             <p>Open Source DIG Web Interface - A local DNS lookup tool</p>
             <p>Keyboard shortcuts: <kbd>Ctrl+Enter</kbd> to submit, <kbd>Ctrl+L</kbd> to clear</p>
+            <p>Developed by <a href="https://ljpc.solutions" target="_blank" rel="noopener">LJPc Solutions</a></p>
         </footer>
     </div>
     
@@ -76,6 +77,6 @@
         // Pass resolvers configuration to JavaScript
         window.resolversConfig = <?php echo json_encode($config['resolvers']); ?>;
     </script>
-    <script src="assets/script-ajax.js"></script>
+    <script src="assets/app.js"></script>
 </body>
 </html>
