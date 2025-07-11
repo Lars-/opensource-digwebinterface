@@ -83,7 +83,7 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 1. **Run the pre-built image**:
    ```bash
-   docker run -d -p 8080:80 ghcr.io/lars-/opensource-digwebinterface:latest
+   docker run -d -p 8080:80 ghcr.io/lars/opensource-digwebinterface:latest
    ```
 
 2. **Or build and run locally**:
