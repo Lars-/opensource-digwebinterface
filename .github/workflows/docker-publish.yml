@@ -31,7 +31,9 @@ jobs:
       - name: Convert repository owner to lowercase
         id: lowercase
         run: |
-          echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "owner=${OWNER_LOWER}" >> $GITHUB_OUTPUT
+          echo "Converted owner from '${{ github.repository_owner }}' to '${OWNER_LOWER}'"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -58,6 +60,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .
