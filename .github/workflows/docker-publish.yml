@@ -31,7 +31,7 @@ jobs:
       - name: Convert repository owner to lowercase
         id: lowercase
         run: |
-          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' | sed 's/-$//')
           echo "owner=${OWNER_LOWER}" >> $GITHUB_OUTPUT
           echo "Converted owner from '${{ github.repository_owner }}' to '${OWNER_LOWER}'"
 
