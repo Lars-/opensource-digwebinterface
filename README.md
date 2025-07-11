@@ -79,7 +79,34 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
 
 ## 🚀 Installation
 
-### Using Docker Compose (Recommended)
+### Using Single Docker Container (Simplest)
+
+1. **Run the pre-built image**:
+   ```bash
+   docker run -d -p 8080:80 ghcr.io/lars-/opensource-digwebinterface:latest
+   ```
+
+2. **Or build and run locally**:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/Lars-/opensource-digwebinterface.git
+   cd opensource-digwebinterface
+   
+   # Build the image
+   docker build -t opensource-digwebinterface .
+   
+   # Run the container
+   docker run -d -p 8080:80 opensource-digwebinterface
+   ```
+
+3. **Access the interface**:
+   ```
+   http://localhost:8080
+   ```
+
+That's it! The single container includes both nginx and PHP, making deployment extremely simple.
+
+### Using Docker Compose (For Development)
 
 1. **Clone the repository**:
    ```bash
@@ -108,11 +135,13 @@ A modern, secure web interface for DNS lookups using the `dig` command. Perfect 
    ```
 
 #### Docker Features
+- **Single Container Option**: Combined nginx + PHP image available on GitHub Container Registry
+- **Multi-Architecture**: Supports both amd64 and arm64 platforms
 - **PHP 8.3** with FPM for optimal performance
 - **Nginx** web server with optimized configuration
-- **Alpine Linux** base for minimal image size
+- **Alpine Linux** base for minimal image size (~100MB)
 - **dig command** pre-installed and configured
-- **Volume mounts** for easy development
+- **Volume mounts** for easy development (compose only)
 - **Automatic permissions** handling for cache directory
 
 ### Using DDEV (Alternative for Development)

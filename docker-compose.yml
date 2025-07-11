@@ -18,7 +18,7 @@ services:
   php:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.php-only
     container_name: dig-php
     volumes:
       - .:/var/www/html

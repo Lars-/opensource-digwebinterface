@@ -1,7 +1,9 @@
 FROM php:8.3-fpm-alpine
 
-# Install required packages
+# Install required packages including nginx and supervisor
 RUN apk add --no-cache \
+    nginx \
+    supervisor \
     bind-tools \
     && docker-php-ext-install -j$(nproc) \
     opcache
@@ -16,22 +18,32 @@ RUN { \
     echo 'opcache.enable_cli=1'; \
 } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Configure PHP-FPM to listen on unix socket for better performance
+RUN sed -i 's/listen = 9000/listen = \/var\/run\/php-fpm.sock/' /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "listen.owner = nginx" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "listen.group = nginx" >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo "listen.mode = 0660" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
+# Copy nginx configuration
+COPY docker/nginx-combined.conf /etc/nginx/nginx.conf
+
+# Copy supervisor configuration
+COPY docker/supervisord.conf /etc/supervisord.conf
+
 # Set working directory
 WORKDIR /var/www/html
 
 # Copy application files
 COPY . /var/www/html
 
-# Create cache directory with proper permissions
-RUN mkdir -p cache && \
-    chown -R www-data:www-data cache && \
-    chmod 755 cache
+# Create necessary directories with proper permissions
+RUN mkdir -p /var/log/supervisor /run/nginx cache && \
+    chown -R www-data:www-data /var/www/html/cache && \
+    chmod 755 /var/www/html/cache && \
+    chown -R nginx:nginx /var/log/nginx /run/nginx
 
-# Copy entrypoint script
-COPY docker/entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Expose port 80 (nginx)
+EXPOSE 80
 
-EXPOSE 9000
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
